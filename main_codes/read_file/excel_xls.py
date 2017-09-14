@@ -15,5 +15,6 @@ def read_xls_file(filename):
 
 if __name__ == '__main__':
     xls_name = unicode('成果科.xlsx', 'utf-8')
+    print type(xls_name)
     filename = os.path.join('../../data/source_data/' , xls_name)
     read_xls_file(filename)
