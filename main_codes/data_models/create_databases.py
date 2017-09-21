@@ -96,6 +96,10 @@ def create_tables(path, xls_name, c_path, c_xls, excle_name, step):
     all_datas, all_columns, sheet_names = give_sheet(path, xls_name, c_path, c_xls, excle_name, step)
 
     # 将所有sheet中数据存入对应数据库表中去
+    # 将每个sheet的栏目信息存储起来，便于后期的引用
+    sums_path = 'data/sums/'
+    all = open(os.path.join(c_path, 'all_tables.txt'), 'w')
+
     for sheet_name in sheet_names:
         try:
             org_columns = all_columns[sheet_name][0]
@@ -110,9 +114,7 @@ def create_tables(path, xls_name, c_path, c_xls, excle_name, step):
 
         insert(table_name, all_datas[sheet_name], ref_columns)
 
-        # 将每个sheet的栏目信息存储起来，便于后期的引用
-        sums_path = 'data/sums/'
-        all = open(os.path.join(c_path, 'all_tables.txt'), 'a')
+
         try:
             all.write(table_name.replace('\n','') +'\n')
             all.write(','.join(org_columns).replace('\n','')+'\n')

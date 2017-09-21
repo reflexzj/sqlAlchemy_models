@@ -19,6 +19,7 @@ def init_databse(self, columns, data):
         setattr(self, columns[index], value)
         values.append(value)
 
+    '''
     # debug: 找到未能完整导入的数据表
     keyword = '引进英国BEAMECH公司液体二氧化碳发泡工艺技术'
 
@@ -31,8 +32,7 @@ def init_databse(self, columns, data):
 
         for index in range(len(values)):
             print columns[index], '--', values[index]
-
-
+    '''
 
 
 
