@@ -49,7 +49,6 @@ def query_table(table_name, keyword, columns):
     exec('result = '+ table_name+'.query.filter(or_(' +conditions+ '))')
     return result
 
-
 def delet_data(table_name, id):
     '''
     删除对应id行的数据
@@ -81,7 +80,9 @@ def update_data(tale_name, id, new_data, columns):
     db.session.commit()
 
 
-def create_tables(path, xls_name, c_path, c_xls, excle_name, step):
+
+
+def create_tables(path, xls_name, c_path, c_xls, excle_name, step, all_tables, page_table, model_mappings):
     '''
     创建一个excle文件中的所有的表，并把对应excel表中数据存入数据库中
     :param path:
@@ -93,12 +94,10 @@ def create_tables(path, xls_name, c_path, c_xls, excle_name, step):
     '''
 
 
-    all_datas, all_columns, sheet_names = give_sheet(path, xls_name, c_path, c_xls, excle_name, step)
+    all_datas, all_columns, sheet_names = give_sheet(path, xls_name, c_path, c_xls, excle_name, step, page_table, model_mappings)
 
     # 将所有sheet中数据存入对应数据库表中去
     # 将每个sheet的栏目信息存储起来，便于后期的引用
-    sums_path = 'data/sums/'
-    all = open(os.path.join(c_path, 'all_tables.txt'), 'w')
 
     for sheet_name in sheet_names:
         try:
@@ -116,15 +115,15 @@ def create_tables(path, xls_name, c_path, c_xls, excle_name, step):
 
 
         try:
-            all.write(table_name.replace('\n','') +'\n')
-            all.write(','.join(org_columns).replace('\n','')+'\n')
-            all.write(','.join(ref_columns).replace('\n','')+'\n')
+            all_tables.write(table_name.replace('\n','') +'\n')
+            all_tables.write(','.join(org_columns).replace('\n','')+'\n')
+            all_tables.write(','.join(ref_columns).replace('\n','')+'\n')
 
         except Exception,e:
             print 'save tables errot: ', sheet_name
             print e
 
-def create_all_tables(reflect_table, source_data_path, columns_data_path):
+def create_all_tables(reflect_table, source_data_path, columns_data_path, sums_data_path):
     '''
     读取所有的excle表格,生成对应的数据库表格，所有表导入完成后可以不再调用
     :param reflect_table:
@@ -132,6 +131,13 @@ def create_all_tables(reflect_table, source_data_path, columns_data_path):
     '''
     # 表头映射表的步长（3行代表一张sheet）
     step = 3
+
+    # sums_data
+    all_tables = open(os.path.join(sums_data_path, 'all_tables.txt'), 'w')
+    page_table = open(os.path.join(sums_data_path, 'page_table.txt'), 'w')
+    model_mappings = open(os.path.join(sums_data_path, 'model_mappings.txt'), 'w')
+
+    model_mappings.write('model_mappings = {\n\t"mappings": {\n')
 
     for key in reflect_table.keys():
         print '->' + key
@@ -144,10 +150,11 @@ def create_all_tables(reflect_table, source_data_path, columns_data_path):
 
         excle_name = reflect_table[key]
 
-        create_tables(source_data_path, xls_name, columns_data_path, c_xls, excle_name, step)
+        create_tables(source_data_path, xls_name, columns_data_path, c_xls, excle_name, step, all_tables, page_table, model_mappings)
 
         print 'finished.'
 
+    model_mappings.write('\t}\n}')
 
 def show_columns(path, file):
     '''
