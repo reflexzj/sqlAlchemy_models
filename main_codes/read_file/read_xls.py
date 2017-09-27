@@ -7,12 +7,12 @@ reload(sys)
 sys.setdefaultencoding('utf-8')
 
 
-def give_sheet(path, xls_name, c_path, c_xls, excle_name, step):
+def give_sheet(path, xls_name, c_path, c_xls, excle_name, step, page_table, model_mappings):
     data = xlrd.open_workbook(os.path.join(path, xls_name))
 
 
     # 读取所有的sheet表，给定对应的columns映射关系
-    all_columns = get_columns(c_path, c_xls, excle_name, step)
+    all_columns = get_columns(c_path, c_xls, excle_name, step, page_table, model_mappings)
 
     # 读取所有sheets中的内容
     all_datas = {}
@@ -29,31 +29,8 @@ def give_sheet(path, xls_name, c_path, c_xls, excle_name, step):
 
     return  all_datas, all_columns, sheet_names
 
-def read_sheet(table, begin, end):
-    '''
-    根据指定的序号，读取excle中的数据，行列存放到二维数组中
-    :param table:
-    :param begin:
-    :param end:
-    :param columns: 表格对应的栏目（属性）
-    :return:
-    '''
 
-    all_datas = []
-
-    for i in range(begin, end):
-        data = table.row_values(i)
-
-        row_data = []
-        for cell in data:
-            content = cell
-            row_data.append(content)
-
-        all_datas.append(row_data)
-
-    return all_datas
-
-def get_columns(path, xls_name, excle_name, step):
+def get_columns(path, xls_name, excle_name, step, page_table, model_mappings):
     '''
     将每个sheet名字，表格中的栏目以及对应的映射英文名从excle文件中获取到
     :param path:
@@ -78,9 +55,7 @@ def get_columns(path, xls_name, excle_name, step):
         sheet_name = names[1]
         table_name = excle_name + '_' + re.findall(r'\d+', names[0])[0]
         print sheet_name ,'(' ,table_name , ')'
-        page_path = 'data/sums'
-        fp = open(os.path.join(page_path, 'page_table.txt'), 'a')
-        fp.write(sheet_name+ ',' + table_name + '\n')
+        page_table.write(sheet_name+ ',' + table_name + '\n')
 
         # 表头属性同步到数据库中时，要注意词前后的空格
         for column in table.row_values(index + 1):
@@ -92,7 +67,10 @@ def get_columns(path, xls_name, excle_name, step):
                 ref_colums.append(column.strip())
 
         # 生成对应的模型代码
+        # 产生对应elasticsearch搜索工具的mapping_index
         model_template = 'class '+table_name+'(db.Model):\n\n'
+        model_mapping = '\t\t"'+ table_name + '": {\n\t\t\t"properties": {\n'
+
         for index in range(len(ref_colums)):
             try:
                 val = ref_colums[index].strip()
@@ -105,10 +83,16 @@ def get_columns(path, xls_name, excle_name, step):
             else:
                 model_template += '\t'+ val + '= db.Column(db.TEXT)\n'
 
+            model_mapping += '\t\t\t\t"'+ val + '":\t{ "type": "text" },\n'
+
         model_template += "\n\tdef __repr__(self):\n" \
                           "\t\treturn 'info:{}'.format(self.id)\n" \
                           "\n\tdef __init__(self, columns, data):\n" \
                           "\t\tinit_databse(self, columns, data)\n"
+
+        model_mapping += '\t\t\t}\n\t\t},\n'
+
+        model_mappings.write(model_mapping)
 
         path = 'data/all_models'
         if not os.path.exists(path):
@@ -116,12 +100,37 @@ def get_columns(path, xls_name, excle_name, step):
         model_code = open(os.path.join(path, table_name+'.txt'), 'w')
         model_code.write(model_template)
 
+
+
+
         sheets.update({sheet_name: [org_colums, ref_colums, table_name]})
 
     return sheets
 
 
 
+def read_sheet(table, begin, end):
+    '''
+    根据指定的序号，读取excle中的数据，行列存放到二维数组中
+    :param table:
+    :param begin:
+    :param end:
+    :param columns: 表格对应的栏目（属性）
+    :return:
+    '''
 
+    all_datas = []
+
+    for i in range(begin, end):
+        data = table.row_values(i)
+
+        row_data = []
+        for cell in data:
+            content = cell
+            row_data.append(content)
+
+        all_datas.append(row_data)
+
+    return all_datas
 
 
