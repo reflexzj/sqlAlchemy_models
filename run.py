@@ -4,7 +4,10 @@ from main_codes.data_models.create_databases import *
 
 # 6大科室
 reflect_table = {'专利科':'patent', '农社科':'farm_socity', '合作交流科':'cop_ex',
-                 '法规科':'law', '成果科':'result', '高新科':'high_new_tec'}
+                 '法规科':'law', '成果科':'result', '高新科':'high_new_tec', '总结':'sums'}
+
+
+# reflect_table = {'总结':'sums'}
 
 # 定义路径和起始参数
 source_data_path = 'data/source_data/'
@@ -13,7 +16,7 @@ sums_data_path = 'data/sums/'
 
 
 # 生成所有excle表中的文件
-create_all_tables(reflect_table, source_data_path, columns_data_path)
+create_all_tables(reflect_table, source_data_path, columns_data_path, sums_data_path)
 
 # 获取所有的数据库映射表关系
 colums_table = show_columns(sums_data_path, file = 'all_tables.txt')
