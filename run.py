@@ -1,6 +1,7 @@
 # coding=utf-8
 from main_codes import app
 from main_codes.data_models.create_databases import *
+from main_codes.data_models.show_columns import *
 
 # 6大科室
 reflect_table = {'专利科':'patent', '农社科':'farm_socity', '合作交流科':'cop_ex',
