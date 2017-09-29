@@ -5,7 +5,6 @@ from main_codes import db
 from sqlalchemy import or_
 import os
 
-
 def insert(table_name, xls_data, columns):
     '''
     全表格查找，匹配表格中的所有栏目
@@ -81,8 +80,7 @@ def update_data(tale_name, id, new_data, columns):
 
 
 
-
-def create_tables(path, xls_name, c_path, c_xls, excle_name, step, all_tables, page_table, model_mappings):
+def create_tables(path, xls_name, c_path, c_xls, excle_name, step, all_tables, page_table, sheets_dict, model_mappings):
     '''
     创建一个excle文件中的所有的表，并把对应excel表中数据存入数据库中
     :param path:
@@ -94,7 +92,7 @@ def create_tables(path, xls_name, c_path, c_xls, excle_name, step, all_tables, p
     '''
 
 
-    all_datas, all_columns, sheet_names = give_sheet(path, xls_name, c_path, c_xls, excle_name, step, page_table, model_mappings)
+    all_datas, all_columns, sheet_names = give_sheet(path, xls_name, c_path, c_xls, excle_name, step, page_table, sheets_dict, model_mappings)
 
     # 将所有sheet中数据存入对应数据库表中去
     # 将每个sheet的栏目信息存储起来，便于后期的引用
@@ -136,6 +134,7 @@ def create_all_tables(reflect_table, source_data_path, columns_data_path, sums_d
     all_tables = open(os.path.join(sums_data_path, 'all_tables.txt'), 'w')
     page_table = open(os.path.join(sums_data_path, 'page_table.txt'), 'w')
     model_mappings = open(os.path.join(sums_data_path, 'model_mappings.txt'), 'w')
+    sheets_dict = open(os.path.join(sums_data_path, 'sheets_dict.txt'), 'w')
 
     model_mappings.write('model_mappings = {\n\t"mappings": {\n')
 
@@ -150,31 +149,13 @@ def create_all_tables(reflect_table, source_data_path, columns_data_path, sums_d
 
         excle_name = reflect_table[key]
 
-        create_tables(source_data_path, xls_name, columns_data_path, c_xls, excle_name, step, all_tables, page_table, model_mappings)
+
+
+        create_tables(source_data_path, xls_name, columns_data_path, c_xls, excle_name, step, all_tables, page_table, sheets_dict, model_mappings)
 
         print 'finished.'
 
     model_mappings.write('\t}\n}')
 
-def show_columns(path, file):
-    '''
-    读取存储好的文件中所有栏目表
-    :param path:
-    :param file:
-    :return: columsn_table字典，返回原始栏目名和对应的数据库中映射表名
-    '''
-    data = open(os.path.join(path, file), 'r').readlines()
-    columns_table = {}
-    for index in range(0, len(data), 3):
-        try:
-            table_name = data[index].strip('\n')
-            org_columns = data[index+1].strip('\n')
-            ref_columns = data[index+2].strip('\n')
-            columns_table.update({table_name:[org_columns, ref_columns]})
-        except Exception,e:
-            # all_tables文件中的没有成功读取相应的table的信息
-            print 'show_columns missing:', table_name
-            print e
 
-    return  columns_table
 
