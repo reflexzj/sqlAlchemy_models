@@ -8,7 +8,7 @@ def init_databse(self, columns, data):
     :param data:
     :return:
     '''
-    # 存储一下处理后的值
+
     values = []
     for index in range(len(columns)):
         # 将缺省值做null处理
