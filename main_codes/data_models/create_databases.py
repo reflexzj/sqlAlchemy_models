@@ -21,7 +21,7 @@ def insert(table_name, xls_data, columns):
             db.session.add(content)
         except Exception, e:
             # models没有成功初始化
-            print 'table model init error: ', table_name, len(columns), len(data)
+            print '对应数据库表没有定义model： ', table_name, '(属性数:',len(columns), ',数据列数:' ,len(data), ')'
             print e
 
         try:
@@ -104,7 +104,7 @@ def create_tables(path, xls_name, c_path, c_xls, excle_name, step, all_tables, p
             table_name = all_columns[sheet_name][2]
         except Exception, e:
             # sheet_name与all_columns中不匹配
-            print 'sheet names error: ', sheet_name
+            print 'excle中没有对应的sheet名: ', sheet_name
             # print ', '.join(sheet_names)
             print e
             continue
@@ -118,7 +118,7 @@ def create_tables(path, xls_name, c_path, c_xls, excle_name, step, all_tables, p
             all_tables.write(','.join(ref_columns).replace('\n','')+'\n')
 
         except Exception,e:
-            print 'save tables errot: ', sheet_name
+            print 'all_tables表记录table的详细信息出错: ', sheet_name
             print e
 
 def create_all_tables(reflect_table, source_data_path, columns_data_path, sums_data_path):

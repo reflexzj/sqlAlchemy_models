@@ -22,7 +22,6 @@ def read_xls_file(filename):
 
 
 if __name__ == '__main__':
-    xls_name = unicode('test.xlsx', 'utf-8')
+    xls_name = unicode('测试.xlsx', 'utf-8')
     print type(xls_name)
-    filename = os.path.join('../../data/source_data/' , xls_name)
-    read_xls_file(filename)
+    read_xls_file(xls_name)

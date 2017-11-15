@@ -3,12 +3,12 @@ from main_codes import app
 from main_codes.data_models.create_databases import *
 from main_codes.data_models.show_columns import *
 
-# 6大科室
-reflect_table = {'专利科':'patent', '农社科':'farm_socity', '合作交流科':'cop_ex',
-                 '法规科':'law', '成果科':'result', '高新科':'high_new_tec', '总结':'sums'}
+# 6大科室以及数据汇总表
+# reflect_table = {'专利科':'patent', '农社科':'farm_socity', '合作交流科':'cop_ex',
+                 # '法规科':'law', '成果科':'result', '高新科':'high_new_tec', '总结':'sums'}
 
 
-# reflect_table = {'总结':'sums'}
+reflect_table = {'总结':'sums'}
 
 # 定义路径和起始参数
 source_data_path = 'data/source_data/'

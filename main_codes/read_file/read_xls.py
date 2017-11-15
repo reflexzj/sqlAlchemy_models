@@ -70,7 +70,7 @@ def get_columns(path, xls_name, excle_name, step, page_table, sheets_dict, model
             if column:
                 ref_colums.append(column.strip())
 
-        sheets_dict.write("'"+ table_name + "':" + "'" + sheet_name + "', ")
+        sheets_dict.write("'"+ sheet_name + "':" + "'" + table_name + "', ")
 
 
         # 生成对应的模型的sqlachemy代码（每个对应一个TXT文件），存储在all_modles文件夹中
